@@ -12,9 +12,9 @@ namespace LineMax
 {
 	public class DataProcessing
 	{
-		
-		private List<int> numbersIncorrect = new List<int>();
-		Dictionary<int, double> lineAmounts = new Dictionary<int, double>();
+		private List<int> _numbersIncorrect = new List<int>();
+		Dictionary<int, double> _lineAmounts = new Dictionary<int, double>();
+		StringBuilder _listMaxSum = new StringBuilder();
 
 		public void ReviewPath(string fileName)
 		{
@@ -27,7 +27,11 @@ namespace LineMax
 						{
 							string row = sr.ReadLine();
 							count++;
-							lineAmounts.Add(count, ProcessingTape(row, count));
+							double thisSum = ProcessingTape(row, count);
+							if (!_numbersIncorrect.Contains(count))
+							{
+								_lineAmounts.Add(count, thisSum);
+							}
 						}
 					}
 				}
@@ -46,18 +50,23 @@ namespace LineMax
 
         public string GetResult()
 		{
-			string listResult = String.Format("{0}:	{1}", "Line number with the maximum total of elements", MaxIndex(lineAmounts).ToString());
 
-			listResult += String.Format("{0}", "\r");
+			StringBuilder resultList = new StringBuilder("Line number with the maximum total of elements: \r\n");
 
-			listResult += "Line numbers with incorrect values:\r\n";
+			double maxAmount = MaxIndex(_lineAmounts);
 
-			foreach (int number in numbersIncorrect)
+			resultList.Append(_listMaxSum + "\r\n");
+
+			resultList.Append(" Max Amount: " + maxAmount + "\r\n");
+
+			resultList.Append("Line numbers with incorrect values: \r\n");
+
+			foreach (int number in _numbersIncorrect)
 			{
-				listResult += String.Format("	{0}", number.ToString());
+				resultList.Append(" " + number);
 			}
 
-			return listResult;
+			return resultList.ToString();
 		}
 
 		public double ProcessingTape(string row, int rowNum)
@@ -67,9 +76,10 @@ namespace LineMax
 
 			foreach (string item in items)
 			{
-                if (!double.TryParse(item, NumberStyles.Number, NumberFormatInfo.InvariantInfo, out double numeric) && numbersIncorrect.IndexOf(rowNum) < 0)
+                if (!double.TryParse(item, NumberStyles.Number, NumberFormatInfo.InvariantInfo, out double numeric) && _numbersIncorrect.IndexOf(rowNum) < 0)
                 {
-					numbersIncorrect.Add(rowNum);
+					_numbersIncorrect.Add(rowNum);
+					break;
 				}
 				else
 				{
@@ -79,7 +89,7 @@ namespace LineMax
 			return sum;
 		}
 
-		public int MaxIndex(Dictionary<int, double> dict)
+		public double MaxIndex(Dictionary<int, double> dict)
 		{
             double maxVal = double.MinValue;
 			int maxKey = 0;
@@ -90,9 +100,12 @@ namespace LineMax
 				{
 					maxVal = kvp.Value;
 					maxKey = kvp.Key;
+					_listMaxSum.Clear();
 				}
+				if (maxVal == kvp.Value)
+					_listMaxSum.Append(" " + kvp.Key);
 			}
-			return maxKey;
+			return maxVal;
 		}
 	}
 }
