@@ -13,8 +13,8 @@ namespace LineMax
 	public class DataProcessing
 	{
 		private List<int> _numbersIncorrect = new List<int>();
-		Dictionary<int, double> _lineAmounts = new Dictionary<int, double>();
-		StringBuilder _listMaxSum = new StringBuilder();
+		private Dictionary<int, double> _lineAmounts = new Dictionary<int, double>();
+		private StringBuilder _listMaxSum = new StringBuilder();
 
 		public void ReviewPath(string fileName)
 		{
@@ -50,10 +50,13 @@ namespace LineMax
 
         public string GetResult()
 		{
-
 			StringBuilder resultList = new StringBuilder("Line number with the maximum total of elements: \r\n");
 
-			double maxAmount = MaxIndex(_lineAmounts);
+			string maxAmount = String.Empty;
+
+			 if (_lineAmounts.Count() > 0)
+
+				maxAmount = MaxIndex(_lineAmounts).ToString();
 
 			resultList.Append(_listMaxSum + "\r\n");
 
@@ -76,7 +79,7 @@ namespace LineMax
 
 			foreach (string item in items)
 			{
-                if (!double.TryParse(item, NumberStyles.Number, NumberFormatInfo.InvariantInfo, out double numeric) && _numbersIncorrect.IndexOf(rowNum) < 0)
+                if (!double.TryParse(item, NumberStyles.Number, NumberFormatInfo.InvariantInfo, out double numeric))
                 {
 					_numbersIncorrect.Add(rowNum);
 					break;
@@ -91,7 +94,7 @@ namespace LineMax
 
 		public double MaxIndex(Dictionary<int, double> dict)
 		{
-            double maxVal = double.MinValue;
+			double maxVal = double.MinValue;
 			int maxKey = 0;
 
 			foreach (KeyValuePair<int, double> kvp in dict)
